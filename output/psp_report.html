@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчёт: Генерация и тестирование ПСП</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 1100px; margin: 0 auto;
+                padding: 24px; background: #f5f5f5; color: #222; }
+        h1 { color: #1565C0; border-bottom: 3px solid #1565C0; padding-bottom: 8px; }
+        h2 { color: #333; margin-top: 32px; }
+        section { background: #fff; border-radius: 8px; padding: 20px;
+                    margin: 16px 0; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px; }
+        .meta { color: #666; font-size: 0.95em; }
+        table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #E3F2FD; }
+    </style>
+</head>
+<body>
+    <h1>Лабораторная работа: Генерация и тестирование ПСП</h1>
+    <p class="meta">Диапазон [0, 5000] · 20 выборок × 1000 элементов · α = 0.05</p>
+
+    <section>
+        <h2>Генераторы</h2>
+        <table>
+            <tr><th>Генератор</th><th>Формула / метод</th></tr>
+            <tr><td>LCG</td><td>X<sub>n+1</sub> = (1103515245·X<sub>n</sub> + 12345) mod 2³¹</td></tr>
+            <tr><td>Von Neumann+Weyl</td><td>middle(X² + w), w += 0x9E3779B97F4A7C15</td></tr>
+            <tr><td>Xorshift32</td><td>x ^= x&lt;&lt;13; x ^= x&gt;&gt;17; x ^= x&lt;&lt;5</td></tr>
+        </table>
+    </section>
+
+        <section>
+            <h2>Бенчмарк производительности</h2>
+            <img src="plots/speed_benchmark.png" alt="Бенчмарк производительности">
+        </section>
+        <section>
+            <h2>Критерий Хи-квадрат</h2>
+            <img src="plots/chi2_pass_rate.png" alt="Критерий Хи-квадрат">
+        </section>
+        <section>
+            <h2>NIST-тесты</h2>
+            <img src="plots/nist_results.png" alt="NIST-тесты">
+        </section>
+        <section>
+            <h2>Гистограммы равномерности</h2>
+            <img src="plots/histogram_uniformity.png" alt="Гистограммы равномерности">
+        </section>
+        <section>
+            <h2>Описательная статистика</h2>
+            <img src="plots/stats_boxplot.png" alt="Описательная статистика">
+        </section>
+    <section>
+        <h2>Файлы данных</h2>
+        <ul>
+            <li><code>output/speed_results.csv</code> — бенчмарк</li>
+            <li><code>output/stats_summary.csv</code> — статистика выборок</li>
+            <li><code>output/nist_results.csv</code> — NIST-тесты</li>
+            <li><code>output/histogram.csv</code> — гистограммы</li>
+        </ul>
+    </section>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>API Reference — Лабораторная работа по ПСП</title>
+    <style>
+        :root { --primary: #1565C0; --bg: #f8f9fa; --card: #fff; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; max-width: 960px;
+               margin: 0 auto; padding: 24px; background: var(--bg); color: #222; line-height: 1.6; }
+        h1 { color: var(--primary); border-bottom: 3px solid var(--primary); padding-bottom: 8px; }
+        h2 { color: #333; margin-top: 36px; border-left: 4px solid var(--primary); padding-left: 12px; }
+        h3 { color: #444; margin-top: 20px; }
+        .card { background: var(--card); border-radius: 8px; padding: 20px;
+                margin: 16px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+        code, pre { font-family: 'Cascadia Code', 'Consolas', monospace; }
+        pre { background: #263238; color: #ECEFF1; padding: 16px; border-radius: 6px;
+              overflow-x: auto; font-size: 0.88em; }
+        .param { color: #555; margin: 4px 0 4px 16px; }
+        .return { color: #2E7D32; margin: 4px 0 4px 16px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #E3F2FD; }
+        nav a { margin-right: 16px; color: var(--primary); }
+        .badge { display: inline-block; background: #E3F2FD; color: var(--primary);
+                 padding: 2px 8px; border-radius: 4px; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+    <h1>API Reference — Генерация и тестирование ПСП</h1>
+    <nav>
+        <a href="#generator">generator.h</a>
+        <a href="#tests">tests.h</a>
+        <a href="#main">main.cpp</a>
+        <a href="../output/psp_report.html">Отчёт с графиками</a>
+    </nav>
+
+    <div class="card">
+        <p>Документация в стиле Doxygen. Для автогенерации установите Doxygen и выполните:
+        <code>doxygen Doxyfile</code> → <code>docs/doxygen/html/index.html</code></p>
+    </div>
+
+    <!-- ===================== generator.h ===================== -->
+    <h2 id="generator">generator.h — Генераторы ПСП</h2>
+
+    <div class="card">
+        <h3>class IGenerator <span class="badge">abstract</span></h3>
+        <p>Абстрактный интерфейс генератора псевдослучайных чисел.</p>
+        <table>
+            <tr><th>Метод</th><th>Описание</th></tr>
+            <tr><td><code>next(min, max)</code></td><td>Целое число в [min, max]</td></tr>
+            <tr><td><code>nextRaw()</code></td><td>Сырое 32-битное значение (для NIST-тестов)</td></tr>
+            <tr><td><code>seed(s)</code></td><td>Установка зерна</td></tr>
+            <tr><td><code>name()</code></td><td>Имя генератора</td></tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>class LCGGenerator</h3>
+        <p>Линейный конгруэнтный генератор: X<sub>n+1</sub> = (a·X<sub>n</sub> + c) mod m</p>
+        <pre>a = 1'103'515'245,  c = 12'345,  m = 2³¹</pre>
+        <p class="param"><strong>next(min, max)</strong> — нормализация через state % span</p>
+    </div>
+
+    <div class="card">
+        <h3>class VonNeumannGenerator</h3>
+        <p>Метод середины квадрата с константой Вейля.</p>
+        <pre>X = middle(X² + w),  w += 0x9E3779B97F4A7C15</pre>
+        <p>Предотвращает вырождение в ноль при длительной генерации.</p>
+    </div>
+
+    <div class="card">
+        <h3>class XorshiftGenerator</h3>
+        <p>Сдвиговый генератор Marsaglia (Xorshift32).</p>
+        <pre>state ^= state &lt;&lt; 13;
+state ^= state &gt;&gt; 17;
+state ^= state &lt;&lt; 5;</pre>
+    </div>
+
+    <div class="card">
+        <h3>class MT19937Generator</h3>
+        <p>Обёртка над <code>std::mt19937</code> для сравнительного бенчмарка.</p>
+    </div>
+
+    <!-- ===================== tests.h ===================== -->
+    <h2 id="tests">tests.h — Статистические тесты</h2>
+
+    <div class="card">
+        <h3>namespace prng</h3>
+        <p>Константы: <code>kAlpha = 0.05</code>, <code>kPValueThreshold = 0.05</code></p>
+    </div>
+
+    <div class="card">
+        <h3>struct SampleStats</h3>
+        <table>
+            <tr><th>Поле</th><th>Описание</th></tr>
+            <tr><td>mean</td><td>Выборочное среднее</td></tr>
+            <tr><td>variance</td><td>Несмещённая дисперсия (n−1)</td></tr>
+            <tr><td>std_dev</td><td>Среднеквадратичное отклонение</td></tr>
+            <tr><td>coeff_of_variation</td><td>CV = (σ/μ)·100%</td></tr>
+        </table>
+        <p><code>computeStats(data)</code> — вычисляет все поля.</p>
+    </div>
+
+    <div class="card">
+        <h3>chiSquareUniformityTest(data, min, max, bins=10)</h3>
+        <p>Критерий Хи-квадрат на равномерность распределения.</p>
+        <p class="param"><strong>data</strong> — выборка целых значений</p>
+        <p class="param"><strong>bins</strong> — число карманов K (df = K−1)</p>
+        <p class="return"><strong>Chi2Result</strong> — chi2, p_value, critical_value, passed, verdict()</p>
+        <p>Вердикт: <code>chi2 ≤ critical</code> и <code>p ≥ 0.05</code> → ПРИНИМАЕТСЯ</p>
+    </div>
+
+    <div class="card">
+        <h3>NIST-тесты (5 штук)</h3>
+        <table>
+            <tr><th>Функция</th><th>Описание</th></tr>
+            <tr><td><code>monobitTest(bits)</code></td><td>Частотный побитовый тест</td></tr>
+            <tr><td><code>frequencyWithinBlockTest(bits)</code></td><td>Частота единиц в блоках по 128 бит</td></tr>
+            <tr><td><code>runsTest(bits)</code></td><td>Тест на серии одинаковых битов</td></tr>
+            <tr><td><code>longestRunOfOnesTest(bits)</code></td><td>Самая длинная серия единиц в блоке</td></tr>
+            <tr><td><code>serialTest(bits)</code></td><td>Частоты перекрывающихся пар битов</td></tr>
+            <tr><td><code>runAllNistTests(bits)</code></td><td>Запуск всех пяти тестов</td></tr>
+        </table>
+        <p><code>expandToBitStream(values, bits_per_value=32)</code> — преобразует числа в биты.</p>
+    </div>
+
+    <!-- ===================== psp_main.cpp ===================== -->
+    <h2 id="main">main.cpp — Точка входа</h2>
+
+    <div class="card">
+        <h3>Функции</h3>
+        <table>
+            <tr><th>Функция</th><th>Описание</th></tr>
+            <tr><td><code>runStatisticalAnalysis()</code></td><td>20×1000 выборок, статистика, Хи-квадрат → stats_summary.csv, histogram.csv</td></tr>
+            <tr><td><code>runNistTests()</code></td><td>5 NIST-тестов × 3 генератора → nist_results.csv</td></tr>
+            <tr><td><code>runBenchmark()</code></td><td>Замер 1k…1M, warmup + volatile sink → speed_results.csv</td></tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>Константы</h3>
+        <table>
+            <tr><th>Константа</th><th>Значение</th></tr>
+            <tr><td>kRangeMin / kRangeMax</td><td>0 / 5000</td></tr>
+            <tr><td>kSampleSize</td><td>1000</td></tr>
+            <tr><td>kNumSamples</td><td>20</td></tr>
+            <tr><td>kChi2Bins</td><td>10</td></tr>
+            <tr><td>kWarmupIterations</td><td>3</td></tr>
+        </table>
+    </div>
+
+    <footer style="margin-top:48px; color:#888; font-size:0.9em;">
+        Лабораторная работа по ПСП · C++17 · 2026
+    </footer>
+</body>
+</html>

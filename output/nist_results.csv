@@ -1,0 +1,16 @@
+generator,test,statistic,p_value,passed
+LCG,Monobit Test,17.8049,6.46914e-71,0
+LCG,Frequency within Block,2450.25,0.757677,1
+LCG,Runs Test,0,0,0
+LCG,Longest Run of Ones in a Block,146.34,0,0
+LCG,Serial Test,635.551,0,0
+VonNeumann+Weyl,Monobit Test,1.94454,0.0518299,1
+VonNeumann+Weyl,Frequency within Block,2415.62,0.884441,1
+VonNeumann+Weyl,Runs Test,0.159728,0.821287,1
+VonNeumann+Weyl,Longest Run of Ones in a Block,348.447,0,0
+VonNeumann+Weyl,Serial Test,7.60981,0.0222613,0
+Xorshift32,Monobit Test,0.855599,0.39222,1
+Xorshift32,Frequency within Block,2505.62,0.464574,1
+Xorshift32,Runs Test,0.775917,0.272505,1
+Xorshift32,Longest Run of Ones in a Block,212.354,0,0
+Xorshift32,Serial Test,2.66149,0.26428,1
